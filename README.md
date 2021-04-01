@@ -3,7 +3,15 @@
 With the database module you can configure multiple connections
 and massively insert data for testing or production.
 
-### Config connections
+## Installation
+
+```shell
+
+npm install @nest-excalibur/data-base
+
+```
+
+## Config connections
 A connection can be defined through a constant or through some other configuration module:
 
 ```typescript
@@ -45,7 +53,7 @@ import {
     imports: [
         DataBaseModule.forRoot(
             {
-                conections: {
+                connections: {
                     mysql: MYSQL_CONNECTION_CONFIG,
                     mongodb: MONGODB_CONNECTION_CONFIG,
                     otherMysql: OTHER_MYSQL_CONNECTION_CONFIG
@@ -107,22 +115,26 @@ To create start massive insertion just use the `DataBaseService` on the `AppModu
 In this example, the massive insertion is handle on `onModuleInit` method:
 
 ```typescript
+
+import { DataBaseService } from '@nest-excalibur/data-base/lib';
+
+
 export class AppModule implements OnModuleInit {
-    constructor(
-        private readonly _dataBaseService: DataBaseService,
-    ) {
-    }
+
+  constructor(
+    private readonly dataBaseService: DataBaseService,
+  ) {
+
+  }
+
+
+  onModuleInit() {
+    this.dataBaseService.insertData().then(
+      _ => this.dataBaseService.showSummary(true),
+    )
+  }
     
-    onModuleInit(): any {
-        this.createData();
-    }
-
-
-    async createBulkData() {
-        await this._dataBaseService.insertData();
-        // Show the insertion logs on console
-        this._dataBaseService.showSummary();
-    }
+  
 }
 ``` 
 ### Logs

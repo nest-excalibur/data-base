@@ -26,7 +26,7 @@ export class DataBaseHelper {
     }
 
     static readFile(path: string): any[] {
-        const filePath = '../../../../../../../../../';
+        const filePath = '../../../../../';
         const joinedPath = join(__dirname, filePath, path);
         const rows = JSON.parse(
             readFileSync(joinedPath, 'utf-8'),

@@ -1,6 +1,6 @@
 import {ConectionConfig} from './connection-config.type';
 
 export interface DataBaseConfig {
-    conections: ConectionConfig;
+    connections: ConectionConfig;
     productionFlag: boolean;
 }
