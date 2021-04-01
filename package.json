@@ -1,11 +1,12 @@
 {
   "name": "@nest-excalibur/data-base",
-  "version": "0.0.3-test",
+  "version": "0.0.4-test",
   "description": "Module for handle database and mocks",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "publish": "tsc && npm publish --access public"
   },
   "author": "gordon_freeman",
   "license": "MIT",
