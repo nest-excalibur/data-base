@@ -1,6 +1,6 @@
 {
   "name": "@nest-excalibur/data-base",
-  "version": "0.0.2-test",
+  "version": "0.0.3-test",
   "description": "Module for handle database and mocks",
   "main": "lib/index.js",
   "scripts": {
@@ -10,11 +10,10 @@
   "author": "gordon_freeman",
   "license": "MIT",
   "dependencies": {
-    "@nest-excalibur/common-api": "0.0.2"
+    "@nest-excalibur/common-api": "0.0.2-test"
   },
   "devDependencies": {
     "typescript": "^4.2.3",
-    "@nestjs/swagger": "^4.7.5",
     "@nestjs/common": "^7.6.15"
   },
   "files": [
