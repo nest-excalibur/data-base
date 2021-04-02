@@ -3,8 +3,7 @@ import {BulkDataConfig} from './interfaces/bulk-data-config.interface';
 import {BULKS_CONFIG, ENV_CONFIG, LOGS_REPOSITORY} from './constants/inject-keys';
 import {LogInterface} from './interfaces/log.interface';
 import {DataBaseHelper} from './utils/data-base-helper';
-import {LogHelper} from './utils/log-helper';
-import { LogRespository, Repository } from './utils/log-repository';
+import { Repository } from './utils/log-repository';
 import { LogTable } from './utils/log-table';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class DataBaseService {
         @Inject(BULKS_CONFIG)
         private readonly bulksConfig: BulkDataConfig[],
         @Inject(LOGS_REPOSITORY)
-        private readonly logRespository: Repository<LogInterface>,
+        private readonly logRepository: Repository<LogInterface>,
     ) {
     }
 
@@ -46,11 +45,11 @@ export class DataBaseService {
                         );
                     currentLog.created = totalCreated;
                 } catch (error) {
-                    currentLog.errors = error.toString();
+                    currentLog.errors = error;
                 }
             }
             this.saveLog(currentLog);
-            this.logRespository.save(currentLog);
+            this.logRepository.save(currentLog);
         }
     }
 
@@ -68,19 +67,10 @@ export class DataBaseService {
         return this._logs;
     }
 
-    showSummary(bordered: boolean = true): void {
-        // console.log(this.logRespository.find());
-        
-        const logsRow = LogTable.makeLogRows(this.logRespository.find());
-
+    public showSummary(bordered: boolean = true): void {
+        const logsRow = LogTable.makeLogRows(this.logRepository.find());
         const logTable = new LogTable(logsRow);
         logTable.draw();
-
-        const {logs, errorsLog} = LogHelper.buildLogTable(this._logs, bordered);
-        console.info(logs);
-        if (errorsLog.length) {
-            console.error('\nErrors: \n' + errorsLog);
-        }
     }
 
 }

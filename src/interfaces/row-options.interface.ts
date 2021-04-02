@@ -5,7 +5,7 @@ export interface PrimaryRow {
     length?: number;
     valueColor: COLORS;
     borderColor: COLORS;
-    bottomTopPatt: string;
+    bottomTopPat: string;
     lateralPath: string;
     isLast?: boolean;
 }
@@ -17,4 +17,17 @@ export interface RowOptions extends PrimaryRow {
 export interface GridOptions extends PrimaryRow {
     values: string[];
     grid: number[];
+}
+
+export  interface SimpleRowOptions {
+    values: any[];
+    valueColor?: COLORS;
+}
+
+export interface  BorderedRow extends SimpleRowOptions{
+    borderColor: COLORS;
+    bottomTopPat: string;
+    grids: number[];
+    lateralPath: string;
+    isLast?: boolean;
 }

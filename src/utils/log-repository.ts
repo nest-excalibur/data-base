@@ -1,12 +1,11 @@
 import * as _ from 'lodash';
 
-import { BulkErrors } from '../interfaces/bulk-errors.interface';
 import { LogInterface } from '../interfaces/log.interface';
 
 export interface ILogDetail {
     creationOrder: number;
     entityName: string;
-    errors?: BulkErrors;
+    errors?: any;
     created?: number;
     refs?: number;
 }
@@ -22,9 +21,9 @@ export interface Repository<T> {
 
 
 
-export class LogRespository implements Repository<LogInterface> {
+export class LogRepository implements Repository<LogInterface> {
 
-    private connectionLogInternal: ConnectionLog;
+    private readonly connectionLogInternal: ConnectionLog;
 
 
     constructor(){

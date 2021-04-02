@@ -6,19 +6,23 @@ export class ValidateException<T = any> {
     ) {
     }
 
-    formatError(): any[] {
-        return this.error.map(
+    formatError(): string {
+        if (!(this.error instanceof Array)){
+            return  this.error;
+        }
+        const formattedErrors =  this.error.map(
             (errorValidation: ValidationResponse<T>) => {
                 const {errors, parsedData} = errorValidation;
                 return {
-                    parsedData: JSON.stringify(parsedData),
+                    parsedData: parsedData,
                     errors: errors.toString(),
                 };
             }
         );
+        return  JSON.stringify(formattedErrors, null, ' ');
     }
 
     public toString() {
-        return this.error instanceof Array ? this.error : this.error.toString();
+        return this.formatError();
     }
 }

@@ -4,7 +4,7 @@ import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigStore } from './store/config.store';
 import { BULKS_CONFIG, ENV_CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
 import { DataBaseService } from './data-base.service';
-import { LogRespository } from './utils/log-repository';
+import { LogRepository } from './utils/log-repository';
 
 @Global()
 @Module(
@@ -30,7 +30,7 @@ export class DataBaseCoreModule {
         };
 
         const logsRepositoryProvider: Provider = {
-            useValue: new LogRespository(),
+            useValue: new LogRepository(),
             provide: LOGS_REPOSITORY,
         }
         const connectionOptions: TypeOrmModuleOptions[] = Object.values(config.connections);

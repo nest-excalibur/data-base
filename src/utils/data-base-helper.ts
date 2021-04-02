@@ -3,7 +3,6 @@ import {join} from 'path';
 import {readFileSync} from 'fs';
 import {FileException} from '../exceptions/file-exception';
 import {ValidateException} from '../exceptions/validate-exception';
-import {CreateBulkException} from '../exceptions/create-bulk-exception';
 import {ClassType} from 'class-transformer/ClassTransformer';
 import {RepositoryException} from '../exceptions/repository-exception';
 import {ValidationResponse} from '../interfaces/validation.response';
@@ -64,56 +63,20 @@ export class DataBaseHelper {
         connection: string = 'default',
     ): Promise<number> {
         // Get repository
-        let repository: Repository<T>;
-        try {
-            repository = DataBaseHelper
-                .getRepository(entity, connection);
-        } catch (error) {
-            throw new CreateBulkException(
-                {
-                    repositoryError: error,
-                }
-            );
+        const repository: Repository<T> = DataBaseHelper.getRepository(entity, connection);
 
-        }
         // Find file
-        let records: D[] = [];
-        // let status: boolean = true;
-        try {
-            records = DataBaseHelper.readFile(path);
-        } catch (error) {
-            throw new CreateBulkException(
-                {
-                    fileError: error,
-                }
-            );
-        }
+        const records: D[] = DataBaseHelper.readFile(path);
+
         // validate Files
         let parsedData: D[] = [];
         if (dtoClass) {
-            try {
-                parsedData = await DataBaseHelper.validateMassive(dtoClass, records);
-            } catch (error) {
-                throw new CreateBulkException(
-                    {
-                        validationError: error.toString(),
-                    }
-                );
-            }
+            parsedData = await DataBaseHelper.validateMassive(dtoClass, records);
         } else {
             parsedData = records;
         }
-
         // insert data
-        try {
-            const createdData = await repository.save(parsedData);
-            return createdData.length;
-        } catch (error) {
-            throw new CreateBulkException(
-                {
-                    insertionError: error.toString(),
-                }
-            );
-        }
+        const createdData = await repository.save(parsedData);
+        return createdData.length;
     }
 }
