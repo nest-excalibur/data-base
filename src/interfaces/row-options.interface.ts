@@ -2,7 +2,7 @@ import {COLORS} from '../constants/colors';
 
 
 export interface PrimaryRow {
-    length: number;
+    length?: number;
     valueColor: COLORS;
     borderColor: COLORS;
     bottomTopPatt: string;

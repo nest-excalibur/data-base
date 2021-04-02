@@ -19,6 +19,6 @@ export class ValidateException<T = any> {
     }
 
     public toString() {
-        return this.error instanceof Array ? this.formatError() : this.error.toString();
+        return this.error instanceof Array ? this.error : this.error.toString();
     }
 }

@@ -1,4 +1,4 @@
-import {getConnection, getManager, ObjectType, Repository} from 'typeorm';
+import {getConnection, ObjectType, Repository} from 'typeorm';
 import {join} from 'path';
 import {readFileSync} from 'fs';
 import {FileException} from '../exceptions/file-exception';

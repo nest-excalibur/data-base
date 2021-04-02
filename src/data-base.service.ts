@@ -1,9 +1,11 @@
 import {Inject, Injectable} from '@nestjs/common';
 import {BulkDataConfig} from './interfaces/bulk-data-config.interface';
-import {BULKS_CONFIG, ENV_CONFIG} from './constants/inject-keys';
+import {BULKS_CONFIG, ENV_CONFIG, LOGS_REPOSITORY} from './constants/inject-keys';
 import {LogInterface} from './interfaces/log.interface';
 import {DataBaseHelper} from './utils/data-base-helper';
 import {LogHelper} from './utils/log-helper';
+import { LogRespository, Repository } from './utils/log-repository';
+import { LogTable } from './utils/log-table';
 
 @Injectable()
 export class DataBaseService {
@@ -14,6 +16,8 @@ export class DataBaseService {
         private readonly productionFlag: boolean,
         @Inject(BULKS_CONFIG)
         private readonly bulksConfig: BulkDataConfig[],
+        @Inject(LOGS_REPOSITORY)
+        private readonly logRespository: Repository<LogInterface>,
     ) {
     }
 
@@ -46,6 +50,7 @@ export class DataBaseService {
                 }
             }
             this.saveLog(currentLog);
+            this.logRespository.save(currentLog);
         }
     }
 
@@ -64,6 +69,13 @@ export class DataBaseService {
     }
 
     showSummary(bordered: boolean = true): void {
+        // console.log(this.logRespository.find());
+        
+        const logsRow = LogTable.makeLogRows(this.logRespository.find());
+
+        const logTable = new LogTable(logsRow);
+        logTable.draw();
+
         const {logs, errorsLog} = LogHelper.buildLogTable(this._logs, bordered);
         console.info(logs);
         if (errorsLog.length) {
