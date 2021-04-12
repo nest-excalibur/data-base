@@ -4,7 +4,7 @@ export class FileException {
     ) {
     }
 
-    public toString(): any {
+    public toString(): string {
         return this.error.toString();
     }
 }

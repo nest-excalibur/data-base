@@ -1,9 +1,7 @@
-import {BulkErrors} from './bulk-errors.interface';
-
 export interface LogInterface {
     creationOrder: number;
     entityName: string;
-    errors?: BulkErrors;
+    errors?: any;
     created?: number;
     connection: string;
 }
