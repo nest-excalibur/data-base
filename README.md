@@ -135,9 +135,11 @@ export class AppModule implements OnModuleInit {
 
 
   onModuleInit() {
-    this.dataBaseService.insertData().then(
-      _ => this.dataBaseService.showSummary(true),
-    )
+    this.dataBaseService
+      .insertData()
+      .then(
+        _ => this.dataBaseService.showSummary(),
+      );
   }
     
   
@@ -146,41 +148,12 @@ export class AppModule implements OnModuleInit {
 ### Logs
 
 ```text
-╔═══════════════════════════════════════════════════════╗
-║ default                                               ║
-╠═══════════════════════════════════════════════════════╣
-║ Order   Entity                     Created     Status ║
-╠═══════════════════════════════════════════════════════╣
-║ 1       Categories                 12          OK     ║
-╠═══════════════════════════════════════════════════════╣
-║ 1       Users                      90          OK     ║
-╠═══════════════════════════════════════════════════════╣
-║ 2       roles                      6           OK     ║
-╠═══════════════════════════════════════════════════════╣
-║ 4       products                   0           FAIL   ║
-╚═══════════════════════════════════════════════════════╝
 
-╔═══════════════════════════════════════════════════════╗
-║ mongo_conn                                            ║
-╠═══════════════════════════════════════════════════════╣
-║ Order   Entity                     Created     Status ║
-╠═══════════════════════════════════════════════════════╣
-║ 1       geo_locations              37          OK     ║
-╚═══════════════════════════════════════════════════════╝
+  CONNECTION: default                                                             
 
+  Order   Entity                                    Created     Status  File Size 
 
-Errors: 
+  1       Product Categories                        9           OK      0.54 Kb   
 
-Errors: 
-
-╔═══════════════════════════════════════════════════════╗
-   products                                          
-╠═══════════════════════════════════════════════════════╣
-validationError
-"{\"name\":\"apple\",\"description\":\"Mollit sint proident irure eiusmod mollit occaecat.\",\"category\":6,\"price\":\"10.47\"}"
-An instance of ProductoCrearDto has failed the validation:
- - property description has failed the following constraints: isAlpha 
-validationError
-
-
+  2       ProductEntity                             15          OK      1.52 Kb   
 ```

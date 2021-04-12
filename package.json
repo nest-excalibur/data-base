@@ -1,6 +1,6 @@
 {
   "name": "@nest-excalibur/data-base",
-  "version": "0.0.4-test",
+  "version": "0.0.5-test",
   "description": "Module for handle database and mocks",
   "main": "lib/index.js",
   "scripts": {
@@ -13,6 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "@nest-excalibur/common-api": "0.0.2-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nest-excalibur/data-base"
   },
   "devDependencies": {
     "@nestjs/common": "^7.6.15",

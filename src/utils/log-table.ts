@@ -38,7 +38,7 @@ export class LogTable implements Drawable {
 
     for (const [connection, logDetails] of entries) {
       const options: SimpleRowOptions = {
-        values: [connection],
+        values: [ 'CONNECTION: ' + connection],
         valueColor: COLORS.fgYellow
       };
 
