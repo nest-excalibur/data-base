@@ -1,48 +1,39 @@
 import * as _ from 'lodash';
 
-import { LogInterface } from '../interfaces/log.interface';
-
-export interface ILogDetail {
-    creationOrder: number;
-    entityName: string;
-    errors?: any;
-    created?: number;
-    refs?: number;
-}
+import { LogInterface, ILogDetail } from '../interfaces';
 
 
 export type ConnectionLog = Record<string, ILogDetail[]>;
 
 
 export interface Repository<T> {
-    save: (args: T) => any;
-    find: () => any;
+  save: (args: T) => void;
+  find: () => any;
 }
-
 
 
 export class LogRepository implements Repository<LogInterface> {
 
-    private readonly connectionLogInternal: ConnectionLog;
+  private readonly connectionLogInternal: ConnectionLog;
 
 
-    constructor(){
-        this.connectionLogInternal = {};
-    }
+  constructor() {
+    this.connectionLogInternal = {};
+  }
 
 
-    save(logEntry: LogInterface){
-        
-        const currentLogs = this.connectionLogInternal[logEntry.connection];
+  save(logEntry: LogInterface): void {
 
-        this.connectionLogInternal[logEntry.connection]= [
-            ...currentLogs || [],
-            _.omit(logEntry, ['connection']),
-        ];
-    }
+    const currentLogs = this.connectionLogInternal[logEntry.connection];
 
-    find() {
-        return this.connectionLogInternal;
-    }
+    this.connectionLogInternal[logEntry.connection] = [
+      ...currentLogs || [],
+      _.omit(logEntry, ['connection'])
+    ];
+  }
+
+  find(): ConnectionLog {
+    return this.connectionLogInternal;
+  }
 
 }

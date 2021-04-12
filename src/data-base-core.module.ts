@@ -1,4 +1,4 @@
-import { DataBaseConfig } from './interfaces/data-base-config.interface';
+import { DataBaseConfig } from './interfaces';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigStore } from './store/config.store';

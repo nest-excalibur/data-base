@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "publish": "tsc && npm publish --access public"
+    "publish": "tsc && npm publish --access public",
+    "lint": "eslint . --ext .ts"
   },
   "author": "gordon_freeman",
   "license": "MIT",
@@ -14,8 +15,11 @@
     "@nest-excalibur/common-api": "0.0.2-test"
   },
   "devDependencies": {
-    "typescript": "^4.2.3",
-    "@nestjs/common": "^7.6.15"
+    "@nestjs/common": "^7.6.15",
+    "@typescript-eslint/eslint-plugin": "^4.21.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.24.0",
+    "typescript": "^4.2.3"
   },
   "files": [
     "lib"

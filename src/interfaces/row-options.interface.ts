@@ -24,10 +24,11 @@ export  interface SimpleRowOptions {
     valueColor?: COLORS;
 }
 
-export interface  BorderedRow extends SimpleRowOptions{
+export interface  BorderedRow {
     borderColor: COLORS;
     bottomTopPat: string;
-    grids: number[];
     lateralPath: string;
+    lightBorder?: boolean;
     isLast?: boolean;
+    grids: number[];
 }
