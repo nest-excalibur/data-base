@@ -1,3 +1,9 @@
+<img src="https://img.shields.io/npm/dt/@nest-excalibur/data-base"></img>
+<img src="https://img.shields.io/npm/v/@nest-excalibur/data-base"></img>
+<img src="https://img.shields.io/npm/l/@nest-excalibur/data-base"></img>
+<img src="https://img.shields.io/github/stars/nest-excalibur/data-base"></img>
+<img src="https://img.shields.io/github/issues/nest-excalibur/data-base"></img>
+
 # Data Base Module
 
 With the database module you can configure multiple connections
