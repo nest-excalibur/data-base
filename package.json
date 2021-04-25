@@ -1,6 +1,6 @@
 {
   "name": "@nest-excalibur/data-base",
-  "version": "0.0.5-test",
+  "version": "0.1.0",
   "description": "Module for handle database and mocks",
   "main": "lib/index.js",
   "scripts": {

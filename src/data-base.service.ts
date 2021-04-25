@@ -6,6 +6,7 @@ import { DataBaseHelper } from './utils/data-base-helper';
 import { Repository } from './utils/log-repository';
 import { LogTable } from './utils/log-table';
 import { ILogDetail } from './interfaces';
+import { ConfigStore } from './store/config.store';
 
 @Injectable()
 export class DataBaseService {
@@ -34,23 +35,26 @@ export class DataBaseService {
       const filePath = this.productionFlag ? bulk.pathProd : bulk.pathDev;
       if (filePath) {
         const DtoClass = bulk.dtoClassValidation;
-        let totalCreated: InsertionResponse = {created: 0, fileSize: 0};
+        let totalCreated: InsertionResponse = {created: 0, fileSize: 0, refs: []};
         try {
           totalCreated = await DataBaseHelper
             .insertData(
               filePath,
               DtoClass,
               entity,
-              connection
+              connection,
+              bulk.refs,
             );
           currentLog.created = totalCreated.created;
           currentLog.fileSize = totalCreated.fileSize;
+          currentLog.refs = totalCreated.refs;
         } catch (error) {
           currentLog.errors = error;
         }
       }
       this.logRepository.save(currentLog);
     }
+    ConfigStore.dispose();
   }
 
   private get bulksConfigOrdered() {

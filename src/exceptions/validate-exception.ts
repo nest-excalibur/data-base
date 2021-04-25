@@ -2,7 +2,7 @@ import {ValidationResponse} from '../interfaces';
 
 export class ValidateException<T = any> {
     constructor(
-        protected error: any | ValidationResponse<T>[],
+        protected error: string | ValidationResponse<T>[],
     ) {
     }
 
@@ -19,10 +19,10 @@ export class ValidateException<T = any> {
                 };
             }
         );
-        return  JSON.stringify(formattedErrors, null, ' ');
+        return JSON.stringify(formattedErrors, null, 2);
     }
 
-    public toString() {
+    public toString(): string {
         return this.formatError();
     }
 }
