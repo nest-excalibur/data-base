@@ -51,7 +51,7 @@ export class DataBaseHelper {
       errors = response.errors;
       parseData = response.parsedData;
     } catch (error) {
-      throw new ValidateException(error.toString());
+      throw new ValidateException<D>(error.toString());
     }
     const hasErrors = errors.length > 0;
     if (hasErrors) {
@@ -76,7 +76,7 @@ export class DataBaseHelper {
 
     const { rows } = records;
 
-    const mapedData = refs ? rows.map(parsedDat => DataBaseHelper.handleRefs(refs, parsedDat as any)) : rows;
+    const mapedData = refs ? rows.map(parsedDat => DataBaseHelper.handleRefs<T>(refs, parsedDat as any)) : rows;
 
     // validate Data from file
     if (dtoClass) {
@@ -101,23 +101,21 @@ export class DataBaseHelper {
     };
   }
 
-  private static handleRefs(refs: Partial<Record<string, any>> | undefined, record: any): any {
-    // verify if bulk has refs
+  private static handleRefs<T>(refs: Partial<Record<string, any>> | undefined, record: Partial<T>): Partial<T> {
     try {
       const clonnedRecord = { ...record };
       const entries = Object.entries(refs);
       // retrieve relations
       return entries.reduce(
-        (recordReference: any, [relationName, relationMap]: [string, any]) => {
+        (recordReference: Record<string, any>, [relationName, relationMap]: [string, any]) => {
           // {1: 'asdas1231', }
           const relationDocument = relationMap.name;
           const metaIndex = recordReference[relationName];
-          recordReference[relationName] = ConfigStore.noSqlRefs[relationDocument][metaIndex];
-          // delete recordReference[relationMap];
+          recordReference[relationName] = ConfigStore.getRealIndex(relationDocument, metaIndex);
           return recordReference;
         },
         clonnedRecord,
-      );
+      ) as Partial<T>;
     } catch (error) {
       throw new RefsException(
         error.toString(),

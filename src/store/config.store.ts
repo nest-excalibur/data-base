@@ -1,3 +1,4 @@
+import { RefsException } from '../exceptions/refs-exception';
 import { BulkDataConfig } from '../interfaces';
 
 export class ConfigStore {
@@ -23,5 +24,21 @@ export class ConfigStore {
       ...this.noSqlRefsInternal[entityName],
       [metaID]: realIndex,
     };
+  }
+
+  static getRealIndex(entityName: string, metaID: string): string {
+    const entityMap = ConfigStore.noSqlRefs[entityName];
+    if (!entityMap) {
+      throw new RefsException(`Entity Map was not found: ${entityName}`);
+    }
+    const realIndex = entityMap[metaID];
+    if (!realIndex) {
+      throw new RefsException(`Real index was not found for ${entityName} with metaID: ${metaID}`);
+    }
+    return realIndex;
+  }
+
+  static dispose(): void {
+    this.noSqlRefsInternal = {};
   }
 }

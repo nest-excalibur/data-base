@@ -6,6 +6,7 @@ import { DataBaseHelper } from './utils/data-base-helper';
 import { Repository } from './utils/log-repository';
 import { LogTable } from './utils/log-table';
 import { ILogDetail } from './interfaces';
+import { ConfigStore } from './store/config.store';
 
 @Injectable()
 export class DataBaseService {
@@ -53,6 +54,7 @@ export class DataBaseService {
       }
       this.logRepository.save(currentLog);
     }
+    ConfigStore.dispose();
   }
 
   private get bulksConfigOrdered() {

@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/github/stars/nest-excalibur/data-base"></img>
 <img src="https://img.shields.io/github/issues/nest-excalibur/data-base"></img>
 
-# Data Base Module
+# DataBase Module
 
 With the database module you can configure multiple connections
 and massively insert data for testing or production.
@@ -144,16 +144,100 @@ export class AppModule implements OnModuleInit {
     
   
 }
+
+```
+
+## Handle mongoDB refs to other documents
+MongoDB Object ids are unique and It will be an issue handle the refs toward other documents at the creating 
+the test data.
+
+To handle this is necesary add the documents on the following way:
+
+Lets suppose we have two documents `users` and `posts` where `posts` has a reference with  `users`.
+
+`users.json`
+
+
+```json
+[
+  {
+    "$metaID": 1,
+    "name": "Mara"
+  },
+  {
+    "$metaID": 2,
+    "name": "Deleon"
+  }
+]
+```
+
+
+
+> add `$metaID` key for the index
+
+
+On `posts.json` just add the reference according with the `$metaID` of `users.json`:
+
+```json
+[
+  {
+    "user": 1,
+    "title": "POST 1"
+  },
+  {
+    "user": 2,
+    "title": "POST 2"
+  }
+]  
+```
+
+Especify on the module the referenced attribute with its respective entity class
+
+`post.module.ts`
+
+```typescript
+@Module({
+    imports: [
+        TypeOrmModule.forFeature([PostEntity], 'mongo_conn'),
+        DataBaseModule.forBulkData(
+            {
+                pathDev: '/src/post/bulks/development/posts.json',
+                creationOrder: 2,
+                entity: PostEntity,
+                connection: 'mongo_conn',
+                dtoClassValidation: PostCreateDTO,
+                refs: {
+                    user: UserEntity,
+                }
+            },
+        ),
+    ],
+})
+export class PostModule { }
+```
+
+
+
 ``` 
 ### Logs
 
 ```text
 
-  CONNECTION: default                                                             
+  CONNECTION: default                                                                                
 
-  Order   Entity                                    Created     Status  File Size 
+  Order   Entity                                    Created     Status  File Size   Refs             
 
-  1       Product Categories                        9           OK      0.54 Kb   
+  1       Product Categories                        9           OK      0.54 Kb     --               
 
-  2       ProductEntity                             15          OK      1.52 Kb   
+  2       ProductEntity                             15          OK      1.52 Kb     --               
+
+
+
+  CONNECTION: mongo_conn                                                                         
+
+  Order   Entity                                    Created     Status  File Size   Refs             
+
+  1       UserEntity                                96          OK      4.97 Kb     --               
+
+  2       PostEntity                                19          OK      0.5 Kb      user   
 ```
