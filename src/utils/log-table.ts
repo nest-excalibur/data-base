@@ -53,7 +53,7 @@ export class LogTable implements Drawable {
       const subHeaders = {
         ...options,
         valueColor: COLORS.fgBlue,
-        values: ['Order', 'Entity', 'Created', 'Status', 'File Size']
+        values: ['Order', 'Entity', 'Created', 'Status', 'File Size', 'Refs']
       };
       logRows.push(
         new LogBorderedRow(options, borderOptions),
@@ -74,6 +74,7 @@ export class LogTable implements Drawable {
             logDetail.created ? logDetail.created.toString() : '0',
             hasErrors ? 'FAIL' : 'OK',
             logDetail.fileSize + ' Kb',
+            logDetail.refs?.join(','),
           ],
           valueColor: hasErrors ? COLORS.fgRed : COLORS.fgGreen
         };

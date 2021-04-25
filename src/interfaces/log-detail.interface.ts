@@ -3,7 +3,7 @@ export interface ILogDetail {
   entityName: string;
   errors?: any;
   created?: number;
-  refs?: number;
+  refs?: string[];
   connection: string;
   fileSize: number;
 }

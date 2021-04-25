@@ -34,17 +34,19 @@ export class DataBaseService {
       const filePath = this.productionFlag ? bulk.pathProd : bulk.pathDev;
       if (filePath) {
         const DtoClass = bulk.dtoClassValidation;
-        let totalCreated: InsertionResponse = {created: 0, fileSize: 0};
+        let totalCreated: InsertionResponse = {created: 0, fileSize: 0, refs: []};
         try {
           totalCreated = await DataBaseHelper
             .insertData(
               filePath,
               DtoClass,
               entity,
-              connection
+              connection,
+              bulk.refs,
             );
           currentLog.created = totalCreated.created;
           currentLog.fileSize = totalCreated.fileSize;
+          currentLog.refs = totalCreated.refs;
         } catch (error) {
           currentLog.errors = error;
         }

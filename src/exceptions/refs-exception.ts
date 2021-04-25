@@ -1,10 +1,10 @@
-export class FileException {
+export class RefsException {
     constructor(
         protected error: string,
     ) {
     }
 
     public toString(): string {
-        return this.error.toString();
+        return this.error;
     }
 }

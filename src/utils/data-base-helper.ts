@@ -1,12 +1,17 @@
-import { getConnection, ObjectType, Repository } from 'typeorm';
-import { join } from 'path';
 import { readFileSync, statSync } from 'fs';
+import { join } from 'path';
+
+import { getConnection, ObjectType, Repository } from 'typeorm';
+import { parseAndValidateMany } from '@nest-excalibur/common-api/lib/api/shared-utils/validate-many';
+import _ from 'lodash';
+
 import { FileException } from '../exceptions/file-exception';
 import { ValidateException } from '../exceptions/validate-exception';
 import { ClassType } from 'class-transformer/ClassTransformer';
 import { RepositoryException } from '../exceptions/repository-exception';
-import { ValidationResponse } from '../interfaces';
-import { parseAndValidateMany } from '@nest-excalibur/common-api/lib/api/shared-utils/validate-many';
+import { RefsException } from '../exceptions/refs-exception';
+import { InsertionResponse, ValidationResponse } from '../interfaces';
+import { ConfigStore } from '../store/config.store';
 
 
 export class DataBaseHelper {
@@ -56,30 +61,72 @@ export class DataBaseHelper {
     }
   }
 
-  static async insertData<T = any, D = (new() => any)>(
+  static async insertData<T = any, D = (new () => any)>(
     path: string,
     dtoClass: D | undefined,
     entity: ObjectType<T>,
-    connection = 'default'
-  ): Promise<{ created: number, fileSize: number }> {
+    connection = 'default',
+    refs?: Partial<Record<keyof T, any>>,
+  ): Promise<InsertionResponse> {
     // Get repository
     const repository: Repository<T> = DataBaseHelper.getRepository(entity, connection);
 
     // Find file
     const records = DataBaseHelper.readFile(path);
 
-    // validate Files
-    let parsedData;
+    const { rows } = records;
+
+    const mapedData = refs ? rows.map(parsedDat => DataBaseHelper.handleRefs(refs, parsedDat as any)) : rows;
+
+    // validate Data from file
     if (dtoClass) {
-      parsedData = await DataBaseHelper.validateMassive(dtoClass, records.rows);
-    } else {
-      parsedData = records;
+      await DataBaseHelper.validateMassive(dtoClass, mapedData);
     }
     // insert data
-    const createdData = await repository.save(parsedData);
+    const createdData = await repository.save(mapedData);
+
+    for (const row of mapedData) {
+      const created = await repository.save(
+        _.omit(row as any, ['$metaID']),
+      );
+      if ((row as any).$metaID) {
+        DataBaseHelper.handleMetaIndex(entity.name, { ...row, ...created });
+      }
+    }
+
     return {
       created: createdData.length,
-      fileSize: records.fileSize
+      fileSize: records.fileSize,
+      refs: refs ? Object.values(refs) : [],
     };
+  }
+
+  private static handleRefs(refs: Partial<Record<string, any>> | undefined, record: any): any {
+    // verify if bulk has refs
+    try {
+      const clonnedRecord = { ...record };
+      const entries = Object.entries(refs);
+      // retrieve relations
+      return entries.reduce(
+        (recordReference: any, [relationName, relationMap]: [string, any]) => {
+          // {1: 'asdas1231', }
+          const relationDocument = relationMap.name;
+          const metaIndex = recordReference[relationName];
+          recordReference[relationName] = ConfigStore.noSqlRefs[relationDocument][metaIndex];
+          // delete recordReference[relationMap];
+          return recordReference;
+        },
+        clonnedRecord,
+      );
+    } catch (error) {
+      throw new RefsException(
+        error.toString(),
+      );
+    }
+  }
+
+  private static handleMetaIndex(documentName: string, record: any): any {
+    ConfigStore.addRefs(documentName, record.$metaID, record.id);
+    return record;
   }
 }
