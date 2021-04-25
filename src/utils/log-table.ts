@@ -38,12 +38,12 @@ export class LogTable implements Drawable {
 
     for (const [connection, logDetails] of entries) {
       const options: SimpleRowOptions = {
-        values: [ 'CONNECTION: ' + connection],
+        values: ['CONNECTION: ' + connection],
         valueColor: COLORS.fgYellow
       };
 
       const borderOptions: BorderedRow = {
-        lateralPath: lightBorder ? ' ' :'║',
+        lateralPath: lightBorder ? ' ' : '║',
         borderColor: COLORS.fgWhite,
         bottomTopPat: lightBorder ? ' ' : '═',
         lightBorder: lightBorder,
@@ -134,7 +134,7 @@ export class ErrorLogRow extends SimpleRow {
 
   build(): string {
     return [
-      SimpleRow.encloseColor(
+      '\n' + SimpleRow.encloseColor(
         this.simpleRowOptions.values[0],
         this.simpleRowOptions.valueColor ?? COLORS.fgRed
       ),
@@ -192,7 +192,7 @@ export class LogBorderedRow extends SimpleRow {
   }
 
   private addSpaces(value: string, colLength: number = this.length) {
-    const total = colLength - value.length;
+    const total = colLength - value?.length;
     let response = value;
     for (let i = 0; i < total; i++) {
       response = response + ' ';

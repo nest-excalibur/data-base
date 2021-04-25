@@ -3,7 +3,7 @@ import { join } from 'path';
 
 import { getConnection, ObjectType, Repository } from 'typeorm';
 import { parseAndValidateMany } from '@nest-excalibur/common-api/lib/api/shared-utils/validate-many';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { FileException } from '../exceptions/file-exception';
 import { ValidateException } from '../exceptions/validate-exception';
@@ -83,8 +83,7 @@ export class DataBaseHelper {
       await DataBaseHelper.validateMassive(dtoClass, mapedData);
     }
     // insert data
-    const createdData = await repository.save(mapedData);
-
+    let createdCounter = 0;
     for (const row of mapedData) {
       const created = await repository.save(
         _.omit(row as any, ['$metaID']),
@@ -92,12 +91,13 @@ export class DataBaseHelper {
       if ((row as any).$metaID) {
         DataBaseHelper.handleMetaIndex(entity.name, { ...row, ...created });
       }
+      createdCounter ++;
     }
 
     return {
-      created: createdData.length,
+      created: createdCounter,
       fileSize: records.fileSize,
-      refs: refs ? Object.values(refs) : [],
+      refs: refs ? Object.keys(refs) : ['--'],
     };
   }
 
