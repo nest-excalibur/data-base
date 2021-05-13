@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/github/stars/nest-excalibur/data-base"></img>
 <img src="https://img.shields.io/github/issues/nest-excalibur/data-base"></img>
 
-# DataBase Module
+# Database Module
 
 With the database module you can configure multiple connections
 and massively insert data for testing or production.
@@ -12,6 +12,7 @@ and massively insert data for testing or production.
 ## Installation
 
 ```shell
+npm i --save-dev @nest-excalibur/common-api
 
 npm install @nest-excalibur/data-base
 
