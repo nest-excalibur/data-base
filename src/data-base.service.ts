@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { BulkDataConfig, InsertionResponse } from './interfaces';
-import { BULKS_CONFIG, ENV_CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
+import { BulkDataConfig, DataBaseConfig, InsertionResponse } from './interfaces';
+import { BULKS_CONFIG, CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
 import { LogInterface } from './interfaces';
 import { DataBaseHelper } from './utils/data-base-helper';
 import { Repository } from './utils/log-repository';
@@ -11,8 +11,8 @@ import { ConfigStore } from './store/config.store';
 @Injectable()
 export class DataBaseService {
   constructor(
-    @Inject(ENV_CONFIG)
-    private readonly productionFlag: boolean,
+    @Inject(CONFIG)
+    private readonly config: DataBaseConfig ,
     @Inject(BULKS_CONFIG)
     private readonly bulksConfig: BulkDataConfig[],
     @Inject(LOGS_REPOSITORY)
@@ -32,7 +32,7 @@ export class DataBaseService {
         fileSize: 0,
         connection
       };
-      const filePath = this.productionFlag ? bulk.pathProd : bulk.pathDev;
+      const filePath = this.config.productionFlag ? bulk.pathProd : bulk.pathDev;
       if (filePath) {
         const DtoClass = bulk.dtoClassValidation;
         let totalCreated: InsertionResponse = {created: 0, fileSize: 0, refs: []};
