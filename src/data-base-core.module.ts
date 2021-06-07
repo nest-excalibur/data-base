@@ -1,8 +1,7 @@
-import { DataBaseConfig } from './interfaces';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import { DataBaseConfig, DataBaseConfigAsyncOptions } from './interfaces';
+import { DynamicModule, FactoryProvider, Global, Module, Provider, ValueProvider } from '@nestjs/common';
 import { ConfigStore } from './store/config.store';
-import { BULKS_CONFIG, ENV_CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
+import { BULKS_CONFIG, CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
 import { DataBaseService } from './data-base.service';
 import { LogRepository } from './utils/log-repository';
 
@@ -19,57 +18,58 @@ import { LogRepository } from './utils/log-repository';
 )
 export class DataBaseCoreModule {
     static forRoot(config: DataBaseConfig): DynamicModule {
-        const bulksConfig = ConfigStore.bulkDataConfigStore;
-        const productionFlagProvider: Provider = {
-            useValue: config.productionFlag,
-            provide: ENV_CONFIG,
+        const configProvider: Provider = {
+            useValue: config,
+            provide: CONFIG,
         };
-        const bulksConfigProvider: Provider = {
-            useValue: bulksConfig,
-            provide: BULKS_CONFIG,
-        };
+        const providers: Provider[] = [
+            ...DataBaseCoreModule.commonProviders,
+            configProvider,
+        ];
 
-        const logsRepositoryProvider: Provider = {
-            useValue: new LogRepository(),
-            provide: LOGS_REPOSITORY,
-        }
-        const connectionOptions: TypeOrmModuleOptions[] = Object.values(config.connections);
-        const dependencies = DataBaseCoreModule.buildDependencies(connectionOptions);
         return {
             module: DataBaseCoreModule,
-            imports: [
-                ...dependencies,
-            ],
-            providers: [
-                productionFlagProvider,
-                bulksConfigProvider,
-                logsRepositoryProvider,
-                DataBaseService,
-            ],
-            exports: [
-                ...dependencies,
-                productionFlagProvider,
-                bulksConfigProvider,
-                DataBaseService,
-            ]
+            providers,
+            exports: providers.filter(
+                provider => (provider as ValueProvider | FactoryProvider).provide !== LOGS_REPOSITORY,
+            ),
         };
     }
 
-    private static buildDependencies(connOptions: TypeOrmModuleOptions[]): DynamicModule[] {
-        // Validate if options is not empty before register module
-        const dependencies = connOptions.reduce(
-            (deps: DynamicModule[], options: TypeOrmModuleOptions) => {
-                const configIsNotEmpty = Object.keys(options).length > 0;
-                if (configIsNotEmpty) {
-                    deps.push(
-                        TypeOrmModule.forRoot(options),
-                    );
-                }
-                return deps;
-            }, [],
-        );
+
+    static forRootAsync(configAsync: DataBaseConfigAsyncOptions): DynamicModule {
+        const configProvider: Provider = {
+            provide: CONFIG,
+            useFactory: configAsync.useFactory,
+            inject: configAsync.inject || [],
+        };
+        const providers: Provider[] = [
+            ...DataBaseCoreModule.commonProviders,
+            configProvider,
+        ];
+        return {
+            module: DataBaseCoreModule,
+            providers,
+            exports: providers.filter(
+                provider => (provider as ValueProvider | FactoryProvider).provide !== LOGS_REPOSITORY,
+            ),
+        };
+    }
+
+    private static get commonProviders(): Provider[] {
+        const bulksConfig = ConfigStore.bulkDataConfigStore;
+        const logsRepositoryProvider: ValueProvider = {
+            useValue: new LogRepository(),
+            provide: LOGS_REPOSITORY,
+        };
+        const bulksConfigProvider: ValueProvider = {
+            useValue: bulksConfig,
+            provide: BULKS_CONFIG,
+        };
         return [
-            ...dependencies,
+            logsRepositoryProvider,
+            bulksConfigProvider,
+            DataBaseService,
         ];
     }
 }
