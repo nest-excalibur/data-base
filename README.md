@@ -43,7 +43,8 @@ export class AppModule {
 }
 ```
 
-If you want use async config, for example using `ConfigService`:
+If you want use an asynchronous configuration, for example, the following code shows how to use the `forRootAsync` 
+through by using `ConfigService`:
 
 
 ```typescript
@@ -64,11 +65,11 @@ import {DataBaseModule} from '@nest-excalibur/data-base/lib';
         }),
 
         DataBaseModule.forRootAsync({
-           useFactory: (configService: ConfigService) => {
+          useFactory: (configService: ConfigService) => {
                const production = configService.get<boolean>('production');
                return {
-                productionFlag: production,
-              };
+                 productionFlag: production,
+               };
             },
           inject: [ConfigService],
         }),
