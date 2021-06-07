@@ -6,8 +6,7 @@
 
 # Database Module
 
-With the database module you can configure multiple connections
-and massively insert data for testing or production.
+With the database module you can insert massively data for testing or production.
 
 ## Installation
 
@@ -18,57 +17,66 @@ npm install @nest-excalibur/data-base
 
 ```
 
-## Config connections
-A connection can be defined through a constant or through some other configuration module:
+
+Just import the `DataBaseModule`
 
 ```typescript
-const MYSQL_CONNECTION_CONFIG: TypeOrmModuleOptions = {
-    type: 'mysql',
-    host: 'localhost',
-    port: 30501,
-    username: 'username',
-    password: '1234',
-    database: 'test',
-    name: 'default',
-    synchronize: true,
-    retryDelay: 40000,
-    retryAttempts: 3,
-    connectTimeout: 40000,
-    keepConnectionAlive: true,
-    dropSchema: true,
-    charset: 'utf8mb4',
-    timezone: 'local',
-    entities: [
-        ...entities,
-    ],
-}
-```
 
-Just import the `DataBaseModule`, it can handle multiple connections, just type
-the name of the database as the key with its respective connection settings as the value.
-
-```typescript
+import { TypeOrmModule } from '@nestjs/typeorm';
 import {DataBaseModule} from '@nest-excalibur/data-base/lib';
-import {
-    OTHER_MYSQL_CONNECTION_CONFIG, 
-    MONGODB_CONNECTION_CONFIG,
-    MYSQL_CONNECTION_CONFIG
- } from './config';
 
 
 @Module({
     imports: [
-        DataBaseModule.forRoot(
-            {
-                connections: {
-                    mysql: MYSQL_CONNECTION_CONFIG,
-                    mongodb: MONGODB_CONNECTION_CONFIG,
-                    otherMysql: OTHER_MYSQL_CONNECTION_CONFIG
-                },
-                productionFlag: false,
-            }
-        ),
-        ...MODULES,
+
+        DataBaseModule.forRoot({productionFlag: false}),
+
+        TypeOrmModule.forRoot({
+             // Your database connection config
+        }),
+
+    ],
+    controllers: [AppController],
+    providers: [AppService],
+})
+export class AppModule {
+}
+```
+
+If you want use async config, for example using `ConfigService`:
+
+
+```typescript
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+
+import {DataBaseModule} from '@nest-excalibur/data-base/lib';
+
+
+
+@Module({
+    imports: [
+
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+
+        DataBaseModule.forRootAsync({
+           useFactory: (configService: ConfigService) => {
+               const production = configService.get<boolean>('production');
+               return {
+                productionFlag: production,
+              };
+            },
+          inject: [ConfigService],
+        }),
+
+        TypeOrmModule.forRoot({
+             // Your database connection config
+        }),
+
     ],
     controllers: [AppController],
     providers: [AppService],

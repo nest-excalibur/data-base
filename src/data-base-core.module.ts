@@ -1,7 +1,7 @@
-import { DataBaseConfig } from './interfaces';
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import { DataBaseConfig, DataBaseConfigAsyncOptions } from './interfaces';
+import { DynamicModule, FactoryProvider, Global, Module, Provider, ValueProvider } from '@nestjs/common';
 import { ConfigStore } from './store/config.store';
-import { BULKS_CONFIG, CONFIG, ENV_CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
+import { BULKS_CONFIG, CONFIG, LOGS_REPOSITORY } from './constants/inject-keys';
 import { DataBaseService } from './data-base.service';
 import { LogRepository } from './utils/log-repository';
 
@@ -18,33 +18,58 @@ import { LogRepository } from './utils/log-repository';
 )
 export class DataBaseCoreModule {
     static forRoot(config: DataBaseConfig): DynamicModule {
-        const bulksConfig = ConfigStore.bulkDataConfigStore;
         const configProvider: Provider = {
             useValue: config,
             provide: CONFIG,
         };
-        const bulksConfigProvider: Provider = {
-            useValue: bulksConfig,
-            provide: BULKS_CONFIG,
-        };
+        const providers: Provider[] = [
+            ...DataBaseCoreModule.commonProviders,
+            configProvider,
+        ];
 
-        const logsRepositoryProvider: Provider = {
+        return {
+            module: DataBaseCoreModule,
+            providers,
+            exports: providers.filter(
+                provider => (provider as ValueProvider | FactoryProvider).provide !== LOGS_REPOSITORY,
+            ),
+        };
+    }
+
+
+    static forRootAsync(configAsync: DataBaseConfigAsyncOptions): DynamicModule {
+        const configProvider: Provider = {
+            provide: CONFIG,
+            useFactory: configAsync.useFactory,
+            inject: configAsync.inject || [],
+        };
+        const providers: Provider[] = [
+            ...DataBaseCoreModule.commonProviders,
+            configProvider,
+        ];
+        return {
+            module: DataBaseCoreModule,
+            providers,
+            exports: providers.filter(
+                provider => (provider as ValueProvider | FactoryProvider).provide !== LOGS_REPOSITORY,
+            ),
+        };
+    }
+
+    private static get commonProviders(): Provider[] {
+        const bulksConfig = ConfigStore.bulkDataConfigStore;
+        const logsRepositoryProvider: ValueProvider = {
             useValue: new LogRepository(),
             provide: LOGS_REPOSITORY,
         };
-        return {
-            module: DataBaseCoreModule,
-            providers: [
-                configProvider,
-                bulksConfigProvider,
-                logsRepositoryProvider,
-                DataBaseService,
-            ],
-            exports: [
-                configProvider,
-                bulksConfigProvider,
-                DataBaseService,
-            ]
+        const bulksConfigProvider: ValueProvider = {
+            useValue: bulksConfig,
+            provide: BULKS_CONFIG,
         };
+        return [
+            logsRepositoryProvider,
+            bulksConfigProvider,
+            DataBaseService,
+        ];
     }
 }
